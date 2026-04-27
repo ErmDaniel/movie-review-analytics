@@ -31,7 +31,8 @@ def roolback_on_validating(func):
             return result
         
     return wrapper
-        
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------
     
 def validating_movie(
     v_title: bool = False, 
@@ -178,3 +179,20 @@ def validating_review(
             return result
         return wrapper
     return outer
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------
+
+def sync_by_review_id(func):
+    @wraps(func)
+    def wrapper(self, review_id: int, *args, **kwargs):
+        review = self.get_review(review_id)
+        movie_id = review.movie_id
+        user_id = review.user_id
+
+        result = func(self, review_id, *args, **kwargs)
+
+        self._recalculate_movie_rating(movie_id)
+        self._recalculate_user_review_count(user_id)
+
+        return result
+    return wrapper

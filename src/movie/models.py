@@ -32,6 +32,10 @@ class Movie:
         pass
 
     @property
+    def id(self) -> int:
+        return self._id
+    
+    @property
     def count_ratings(self) -> int:
         return len(self._ratings)
 
@@ -54,20 +58,17 @@ class Movie:
     def set_genres(self, new_genres: list[str]) -> None:
         self._genres = new_genres
 
-    
     def add_genre(self, genre: str) -> None:
         genre = genre.strip()
         if genre and genre not in self._genres:
             self._genres.append(genre)
             self.touch()
 
-    
     def remove_genre(self, genre: str) -> None:
         if genre in self._genres:
             self._genres.remove(genre)
             self.touch()
 
-    
     def set_other_details(
         self,
         *,
@@ -169,6 +170,10 @@ class User:
     def __post_init__(self) -> None:
         pass
 
+    @property
+    def id(self) -> int:
+        return self._id
+    
     def set_password(self, raw_password: str) -> None:
         if len(raw_password) < 8:
             raise PasswordError("Password must be at least 8 characters long")
@@ -199,6 +204,9 @@ class User:
     def _activate(self) -> None:
         self._is_active = True
         self.touch()
+
+    def set_review_count(self, new_review_count) -> None:
+        self._review_count = new_review_count
 
     def to_dict(self, include_sensitive: bool = False) -> dict:
         data = {
@@ -270,7 +278,31 @@ class Review:
     @validating_review(v_links=True, v_rating=True, v_status=True)
     def __post_init__(self) -> None:
         pass
+    
+    @property
+    def id(self) -> int:
+        return self._id
 
+    @property
+    def movie_id(self) -> int:
+        return self._movie_id
+
+    @property
+    def user_id(self) -> int:
+        return self._user_id
+
+    @property
+    def status(self) -> int:
+        return self._status
+
+    @property
+    def rating(self) -> int:
+        return self._rating
+
+    @property
+    def created_at(self) -> datetime:
+        return self._created_at
+    
     @roolback_on_validating
     @validating_review(v_rating=True)
     def change_rating(self, new_rating: int) -> None:
