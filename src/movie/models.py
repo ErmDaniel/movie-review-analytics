@@ -12,6 +12,17 @@ from .decorators import (
     validating_user,
 )
 
+from datetime import UTC, datetime
+
+def _parse_datetime(value):
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value
+    if isinstance(value, str):
+        return datetime.fromisoformat(value)
+    raise TypeError(f"Unsupported datetime value: {value!r}")
+
 @dataclass(slots=True)
 class Movie:
     _id: int
@@ -122,12 +133,12 @@ class Movie:
             _description=data.get("description"),
             _ratings=list(data.get("ratings", [])),
             _created_at=(
-                datetime.fromisoformat(data["created_at"])
+                _parse_datetime(data["created_at"])
                 if "created_at" in data and data["created_at"] is not None
                 else datetime.now(UTC)
             ),
             _updated_at=(
-                datetime.fromisoformat(data["updated_at"])
+                _parse_datetime(data["updated_at"])
                 if "updated_at" in data and data["updated_at"] is not None
                 else datetime.now(UTC)
             ),
@@ -241,17 +252,17 @@ class User:
             _is_active=data.get("is_active", True),
             _review_count=data.get("review_count", 0),
             _created_at=(
-                datetime.fromisoformat(data["created_at"])
+                _parse_datetime(data["created_at"])
                 if "created_at" in data and data["created_at"] is not None
                 else datetime.now(UTC)
             ),
             _updated_at=(
-                datetime.fromisoformat(data["updated_at"])
+                _parse_datetime(data["updated_at"])
                 if "updated_at" in data and data["updated_at"] is not None
                 else datetime.now(UTC)
             ),
             _last_login_at=(
-                datetime.fromisoformat(data["last_login_at"])
+                _parse_datetime(data["last_login_at"])
                 if "last_login_at" in data and data["last_login_at"] is not None
                 else None
             ),
@@ -343,10 +354,16 @@ class Review:
             _user_id=data["user_id"],
             _rating=data["rating"],
             _status=ReviewStatus(data.get("status", 1)),
-            _created_at=datetime.fromisoformat(data["created_at"])
-            if "created_at" in data else datetime.now(UTC),
-            _updated_at=datetime.fromisoformat(data["updated_at"])
-            if "updated_at" in data else datetime.now(UTC),
+            _created_at=(
+                _parse_datetime(data["created_at"])
+                if "created_at" in data and data["created_at"] is not None
+                else datetime.now(UTC)
+            ),
+            _updated_at=(
+                _parse_datetime(data["updated_at"])
+                if "updated_at" in data and data["updated_at"] is not None
+                else datetime.now(UTC)
+            ),
         )
 
     def touch(self) -> None:
