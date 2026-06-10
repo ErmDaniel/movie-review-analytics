@@ -23,3 +23,32 @@ Python-приложение для хранения, упорядочивани�
 - Интеграция базы данных PostgreSQL и подключение к ней с помощью библиотеки psycopg2
 - Реализация слоя хранения данных: сохранение и загрузка информации о фильмах, пользователях, оценках и рецензиях.
 - Добавление аналитического модуля на основе Pandas и Matplotlib для построения отчётов и визуализаций.
+
+## Установка
+pip install -r requirements.txt
+
+## Использование (CLI)
+python -m src.cli find --genre "Sci-Fi"
+python -m src.cli find --year-from 2010 --min-rating 7.5
+
+## Запуск тестов
+pytest tests/
+
+## Структура проекта
+├── README.md
+├── requirements.txt
+├── src/
+│    ├── movie/
+│    │   ├── __init__.py
+│    │   ├── decorators.py
+│    │   ├── enums.py
+│    │   ├── exceptions.py
+│    │   ├── models.py
+│    │   ├── security.py
+│    │   └── service.py
+│    └──cli.py
+├──data
+│    └──movies_50.json
+└──test
+     └──test_find_movies.py
+

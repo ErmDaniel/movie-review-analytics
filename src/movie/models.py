@@ -320,6 +320,7 @@ class Review:
         self._status = ReviewStatus.DELETED
         self.touch()
 
+    @property
     def is_active(self) -> bool:
         return self._status == ReviewStatus.PUBLISHED
 

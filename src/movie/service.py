@@ -84,7 +84,7 @@ class MovieReviewService:
         movie.set_rating(active_ratings)
 
     def _recalculate_user_review_count(self, user_id: int) -> None:
-        user = self.get_user(user)
+        user = self.get_user(user_id)
 
         active_review_count = sum(
             1
@@ -169,3 +169,45 @@ class MovieReviewService:
             raise ServiceValidationError("Review is deleted and cannot be changed") 
             
         review.change_rating(new_rating)
+
+    def find_movies(
+        self, 
+        *,
+        genre: str | None = None,
+        year_from: int = None,
+        year_to: int | None = None,
+        min_avg_rating: float | None = None,
+        max_avg_rating: float | None = None,
+        title_contains: str | None = None,
+    ) -> list[Movie]:
+
+        """
+        Находит список фильмов по заданным критериям
+        
+        Фильтрует коллекцию фильмов по указанным параметрам (жанр, год,
+        рейтинг, строка поиска в названии (title_contains) и 
+        возвращает список найденных фильмов
+        """
+        results = list(self._movies.values())
+
+        if genre is not None:
+            genre_lower = genre.strip().lower()
+            results = [m for m in results if genre_lower in (g.lower() for g in m._genres)]
+
+        if year_from is not None:
+            results = [m for m in results if m._release_year >= year_from]
+    
+        if year_to is not None:
+            results = [m for m in results if m._release_year <= year_to]
+    
+        if min_avg_rating is not None:
+            results = [m for m in results if m.average_rating >= min_avg_rating]
+    
+        if max_avg_rating is not None:
+            results = [m for m in results if m.average_rating <= max_avg_rating]
+    
+        if title_contains is not None:
+            needle = title_contains.strip().lower()
+            results = [m for m in results if needle in m._title.lower()]
+    
+        return results
